@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.math.BigInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,13 +23,13 @@ import com.opencsv.CSVReaderBuilder;
 @RestController
 public class WebCsvController {
 
-	private Map<Long, No> arvore;
+	private Map<BigInteger, No> arvore;
 	private ResourceLoader resourceLoader;
 
 	WebCsvController(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
         Resource resource = resourceLoader.getResource("classpath:csv/arvore.csv");
-		this.arvore = new HashMap<Long, No>();
+		this.arvore = new HashMap<BigInteger, No>();
 		Reader reader;
 		try {
 			reader = new InputStreamReader(resource.getInputStream());
@@ -41,7 +42,7 @@ public class WebCsvController {
 			    .build();
 			String[] line;
 		    while ((line = csvReader.readNext()) != null) {
-		    	arvore.put(new Long(line[0]), new No(line[1], line[2]));
+		    	arvore.put(new BigInteger(line[0]), new No(line[1], line[2]));
 		    }
 		    csvReader.close();
 		    reader.close();
@@ -52,11 +53,9 @@ public class WebCsvController {
 	
 	@RequestMapping("/")
 	String showArvore() {
-		String res = "";
-		for (Long id: arvore.keySet()){
-            No no = arvore.get(id); 
-            res += "id: " + id + " " + no + "\n";
-		}
+		String res = "http://localhost:8080/<\\BR>";
+		res += "http://localhost:8080/mensagem<\\BR>";
+		res += "http://localhost:8080/mensagem?conteudo=\"Caros amigos ...\"";
 		return res;
 	}
 
@@ -64,21 +63,35 @@ public class WebCsvController {
     public String responder(@RequestParam(value="conteudo", defaultValue="Alo") String conteudo) {
 		// percorre a arvore
 		No no;
-		Long id = 0L;
+		BigInteger id = BigInteger.ZERO;
+		//String tracing = "tracing ...";
+		//int cnt = 0;
 		while(true) {
 			no = arvore.get(id);
-			if(!no.getPalavra().toLowerCase().contains("null")) { 
-				// não é folha
-				if(conteudo.toLowerCase().contains(no.getPalavra().toLowerCase())) {
-					// mensagem contem a palavra do nó, vai para a esquerda
-					id = 2*id+1;
-				} else {
-					id = 2*id+2;
-				}
-			} else {
-				break;
-			}
+			//cnt++;
+			if(no != null) {
+			    //tracing += " " + id + " " + no.getPalavra() + " - ";
+			    if(!no.getPalavra().toLowerCase().contains("null")) { 
+				    // não é folha
+				    if(conteudo.toLowerCase().contains(no.getPalavra().toLowerCase().trim())) {
+					    // mensagem contem a palavra do nó, vai para a esquerda
+					    id = id.multiply(new BigInteger("2")).add(BigInteger.ONE);
+				    } else {
+					    id = id.multiply(new BigInteger("2")).add(BigInteger.ONE).add(BigInteger.ONE);
+				    }
+				    //tracing += "" + id + " >>> ";
+			    } else {
+				    break;
+			    }
+			 } else {
+			    // no nulo, falha!
+			    //tracing += "id: " + id + "    FALHOU!!!!!";
+			    //return tracing;
+			    break;
+			 }
+			//if(cnt>8) return tracing;
 		}
 		return no.getResposta();
+		//return tracing + " !!!!!!  " + no.getResposta() + "!!!!! ";
     }
 }
