@@ -53,9 +53,9 @@ public class WebCsvController {
 	
 	@RequestMapping("/")
 	String showArvore() {
-		String res = "http://localhost:8080/<\\BR>";
-		res += "http://localhost:8080/mensagem<\\BR>";
-		res += "http://localhost:8080/mensagem?conteudo=\"Caros amigos ...\"";
+		String res = "http://localhost:8080/";
+		res += "   ou   http://localhost:8080/mensagem";
+		res += "   ou   http://localhost:8080/mensagem?conteudo=\"Caros amigos ...\"";
 		return res;
 	}
 
@@ -64,13 +64,10 @@ public class WebCsvController {
 		// percorre a arvore
 		No no;
 		BigInteger id = BigInteger.ZERO;
-		//String tracing = "tracing ...";
-		//int cnt = 0;
 		while(true) {
 			no = arvore.get(id);
-			//cnt++;
+			// para compreender certos detalhes, é preciso conhecer como arvore.csv é gerado.
 			if(no != null) {
-			    //tracing += " " + id + " " + no.getPalavra() + " - ";
 			    if(!no.getPalavra().toLowerCase().contains("null")) { 
 				    // não é folha
 				    if(conteudo.toLowerCase().contains(no.getPalavra().toLowerCase().trim())) {
@@ -79,19 +76,13 @@ public class WebCsvController {
 				    } else {
 					    id = id.multiply(new BigInteger("2")).add(BigInteger.ONE).add(BigInteger.ONE);
 				    }
-				    //tracing += "" + id + " >>> ";
 			    } else {
 				    break;
 			    }
 			 } else {
-			    // no nulo, falha!
-			    //tracing += "id: " + id + "    FALHOU!!!!!";
-			    //return tracing;
 			    break;
 			 }
-			//if(cnt>8) return tracing;
 		}
 		return no.getResposta();
-		//return tracing + " !!!!!!  " + no.getResposta() + "!!!!! ";
     }
 }
