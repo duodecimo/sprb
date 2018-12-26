@@ -14,6 +14,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -59,6 +60,7 @@ public class WebCsvController {
 		return res;
 	}
 
+	@CrossOrigin(origins = "http://localhost:4200")
 	@RequestMapping("/mensagem")
     public String responder(@RequestParam(value="conteudo", defaultValue="Alo") String conteudo) {
 		// percorre a arvore
